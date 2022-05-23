@@ -185,7 +185,7 @@ pub struct CombinedData {
 
 async fn get_algorand_data() -> i64 {
     let client = reqwest::Client::new();
-    let response_1 = client
+    let response = client
         .get(&env::var("ALGOD_URL_1").unwrap())
         .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
         .header(CONTENT_TYPE, "application/json")
@@ -198,30 +198,12 @@ async fn get_algorand_data() -> i64 {
         .await
         .unwrap();
 
-    let client_2 = reqwest::Client::new();
-    let response_2 = client_2
-        .get(&env::var("ALGOD_URL_2").unwrap())
-        .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
-        .header(CONTENT_TYPE, "application/json")
-        .header(ACCEPT, "application/json")
-        .header("pragma", "public")
-        .send()
-        .await
-        .unwrap()
-        .json::<AlgoSupply>()
-        .await
-        .unwrap();
-
-    // CombinedData { holders: a , supply: b } = tokio::join! {response_1.balances.len() as i64,response_2.total  }
-
-    // let (a,b) = tokio::join! {response_1.balances.len()  ,response_2.asset.params.total  };
-
-    response_1.balances.len() as i64
+    response.balances.len() as i64
 }
 
 async fn get_algorand_supply() -> i64 {
-    let client_2 = reqwest::Client::new();
-    let response_2 = client_2
+    let client = reqwest::Client::new();
+    let response = client
         .get(&env::var("ALGOD_URL_2").unwrap())
         .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
         .header(CONTENT_TYPE, "application/json")
@@ -234,7 +216,7 @@ async fn get_algorand_supply() -> i64 {
         .await
         .unwrap();
 
-    response_2.asset.params.total
+    response.asset.params.total
 }
 
 async fn combine_algorand_data() -> CombinedData {
@@ -289,7 +271,6 @@ async fn get_ethereum_data() -> CombinedData {
 
 async fn get_total_holders() -> impl Responder {
     let (algorand_holders, stellar_holders, ethereum_holders) = tokio::join! {
-        // get_algorand_data(),
         combine_algorand_data(),
         get_stellar_data(),
         get_ethereum_data()
