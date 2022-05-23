@@ -1090,6 +1090,7 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "bigdecimal",
+ "derive_more",
  "dotenv",
  "eyre",
  "reqwest",

@@ -1,4 +1,6 @@
+extern crate derive_more;
 extern crate dotenv;
+use derive_more::{Add, Mul};
 use dotenv::dotenv;
 use reqwest::header::{ACCEPT, CONTENT_TYPE};
 use std::env;
@@ -24,8 +26,47 @@ struct Balance {
 
 /// This struct holds data required to parse Algorand User data.
 #[derive(Deserialize, Debug)]
-struct Algoholder {
+pub struct Algoholder {
     balances: Vec<Balance>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AlgoSupply {
+    pub asset: Asset,
+    #[serde(rename = "current-round")]
+    pub current_round: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Asset {
+    #[serde(rename = "created-at-round")]
+    pub created_at_round: i64,
+    pub deleted: bool,
+    pub index: i64,
+    pub params: Params,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Params {
+    pub clawback: String,
+    pub creator: String,
+    pub decimals: i64,
+    #[serde(rename = "default-frozen")]
+    pub default_frozen: bool,
+    pub freeze: String,
+    pub manager: String,
+    pub name: String,
+    #[serde(rename = "name-b64")]
+    pub name_b64: String,
+    pub reserve: String,
+    pub total: i64,
+    #[serde(rename = "unit-name")]
+    pub unit_name: String,
+    #[serde(rename = "unit-name-b64")]
+    pub unit_name_b64: String,
+    pub url: String,
+    #[serde(rename = "url-b64")]
+    pub url_b64: String,
 }
 
 /// This struct holds data required to parse Stellar User Data
@@ -114,6 +155,7 @@ pub struct EthereumHolders {
 pub struct Price {
     pub rate: f64,
     pub diff: f64,
+    #[serde(rename = "diff7d")]
     pub diff7_d: f64,
     pub ts: i64,
     #[serde(rename = "marketCapUsd")]
@@ -135,10 +177,16 @@ pub struct Price {
     pub currency: String,
 }
 
+#[derive(Add, Serialize)]
+pub struct CombinedData {
+    pub holders: i64,
+    pub supply: i64,
+}
+
 async fn get_algorand_data() -> i64 {
     let client = reqwest::Client::new();
-    let response = client
-        .get(&env::var("ALGOD_URL").unwrap())
+    let response_1 = client
+        .get(&env::var("ALGOD_URL_1").unwrap())
         .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
         .header(CONTENT_TYPE, "application/json")
         .header(ACCEPT, "application/json")
@@ -149,10 +197,56 @@ async fn get_algorand_data() -> i64 {
         .json::<Algoholder>()
         .await
         .unwrap();
-    response.balances.len() as i64
+
+    let client_2 = reqwest::Client::new();
+    let response_2 = client_2
+        .get(&env::var("ALGOD_URL_2").unwrap())
+        .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
+        .header(CONTENT_TYPE, "application/json")
+        .header(ACCEPT, "application/json")
+        .header("pragma", "public")
+        .send()
+        .await
+        .unwrap()
+        .json::<AlgoSupply>()
+        .await
+        .unwrap();
+
+    // CombinedData { holders: a , supply: b } = tokio::join! {response_1.balances.len() as i64,response_2.total  }
+
+    // let (a,b) = tokio::join! {response_1.balances.len()  ,response_2.asset.params.total  };
+
+    response_1.balances.len() as i64
 }
 
-async fn get_stellar_data() -> i64 {
+async fn get_algorand_supply() -> i64 {
+    let client_2 = reqwest::Client::new();
+    let response_2 = client_2
+        .get(&env::var("ALGOD_URL_2").unwrap())
+        .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
+        .header(CONTENT_TYPE, "application/json")
+        .header(ACCEPT, "application/json")
+        .header("pragma", "public")
+        .send()
+        .await
+        .unwrap()
+        .json::<AlgoSupply>()
+        .await
+        .unwrap();
+
+    response_2.asset.params.total
+}
+
+async fn combine_algorand_data() -> CombinedData {
+    let (a, b) = tokio::join!(get_algorand_data(), get_algorand_supply());
+
+    CombinedData {
+        holders: a,
+        supply: b,
+    }
+}
+
+async fn get_stellar_data() -> CombinedData {
     let client = reqwest::Client::new();
     let response = client
         .get(&env::var("STELLAR_URL").unwrap())
@@ -165,11 +259,15 @@ async fn get_stellar_data() -> i64 {
         .json::<StellarHolders>()
         .await
         .unwrap();
-    response.trustlines.funded
+
+    CombinedData {
+        holders: response.trustlines.funded,
+        supply: response.supply,
+    }
 }
 
 // TODO: Add API Key as query string variable.
-async fn get_ethereum_data() -> i64 {
+async fn get_ethereum_data() -> CombinedData {
     let client = reqwest::Client::new();
     let response = client
         .get(&env::var("ETHPLORER_URL").unwrap())
@@ -182,12 +280,17 @@ async fn get_ethereum_data() -> i64 {
         .json::<EthereumHolders>()
         .await
         .unwrap();
-    response.holders_count
+
+    CombinedData {
+        holders: response.holders_count,
+        supply: (response.price.available_supply as i64),
+    }
 }
 
 async fn get_total_holders() -> impl Responder {
     let (algorand_holders, stellar_holders, ethereum_holders) = tokio::join! {
-        get_algorand_data(),
+        // get_algorand_data(),
+        combine_algorand_data(),
         get_stellar_data(),
         get_ethereum_data()
     };
