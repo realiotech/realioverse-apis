@@ -11,24 +11,9 @@ actix-web = "4"
 tokio = { version = "1", features = ["full"] }
 
 dotenv = "0.15.0"
-ethers = { git = "https://github.com/gakonst/ethers-rs", features = [
-    "ws",
-    "rustls",
-] }
 eyre = "0.6.8"
 serde_json = "1.0.81"
 serde = "1.0.137"
 bigdecimal = { version = "0.1.2", default-features = true }
-chrono = "0.4"
-diesel = { version = "1.4.4", features = [
-    "postgres",
-    "numeric",
-    "num-integer",
-    "num-bigint",
-    "num-traits",
-    "uuidv07",
-    "chrono",
-    "bigdecimal",
-] }
-reqwest = "0.11.3"
+reqwest = { version = "0.11.3", features = ["json", "blocking"] }
 serde_with = { version = "1.4.0", features = ["json"] }
