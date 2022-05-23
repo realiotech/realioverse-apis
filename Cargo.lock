@@ -230,246 +230,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "algonaut"
-version = "0.3.0"
-dependencies = [
- "algonaut_abi",
- "algonaut_client 0.3.0",
- "algonaut_core 0.3.0",
- "algonaut_crypto 0.3.0",
- "algonaut_encoding 0.3.0",
- "algonaut_model 0.3.0",
- "algonaut_transaction 0.3.0",
- "data-encoding",
- "futures-timer",
- "gloo-timers",
- "instant",
- "num-bigint 0.4.3",
- "num-traits",
- "rmp-serde 1.1.0",
- "sha2 0.10.2",
- "thiserror",
-]
-
-[[package]]
-name = "algonaut_abi"
-version = "0.3.0"
-dependencies = [
- "algonaut_core 0.3.0",
- "derive_more",
- "lazy_static",
- "num-bigint 0.4.3",
- "regex",
- "serde",
- "sha2 0.10.2",
- "thiserror",
-]
-
-[[package]]
-name = "algonaut_client"
-version = "0.3.0"
-dependencies = [
- "algonaut_core 0.3.0",
- "algonaut_crypto 0.3.0",
- "algonaut_encoding 0.3.0",
- "algonaut_model 0.3.0",
- "async-trait",
- "data-encoding",
- "derive_more",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror",
- "url",
-]
-
-[[package]]
-name = "algonaut_client"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31038fa5678c5ff03231e4ca21ea1fc43966c2810b94ae492c47331444c6c58e"
-dependencies = [
- "algonaut_core 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_crypto 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_encoding 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_model 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_transaction 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "async-trait",
- "data-encoding",
- "derive_more",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror",
- "url",
-]
-
-[[package]]
-name = "algonaut_core"
-version = "0.3.0"
-dependencies = [
- "algonaut_crypto 0.3.0",
- "algonaut_encoding 0.3.0",
- "data-encoding",
- "derive_more",
- "ring",
- "rmp-serde 1.1.0",
- "serde",
- "sha2 0.10.2",
- "static_assertions",
- "thiserror",
-]
-
-[[package]]
-name = "algonaut_core"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c5f7be9ec0f41e09da300674715b21a5fa515775ae8e506940edf6b36b5b5d9"
-dependencies = [
- "algonaut_crypto 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_encoding 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "data-encoding",
- "derive_more",
- "ring",
- "rmp-serde 0.15.5",
- "serde",
- "sha2 0.9.9",
- "static_assertions",
- "thiserror",
-]
-
-[[package]]
-name = "algonaut_crypto"
-version = "0.3.0"
-dependencies = [
- "algonaut_encoding 0.3.0",
- "data-encoding",
- "derive_more",
- "indexmap",
- "lazy_static",
- "ring",
- "serde",
- "sha2 0.10.2",
- "static_assertions",
- "thiserror",
-]
-
-[[package]]
-name = "algonaut_crypto"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68c7d5b6aa450d1dd9c9bd3a66b103c02bf3507176e3840051b5c59aee18eb09"
-dependencies = [
- "algonaut_encoding 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "data-encoding",
- "derive_more",
- "indexmap",
- "lazy_static",
- "ring",
- "serde",
- "sha2 0.9.9",
- "static_assertions",
- "thiserror",
-]
-
-[[package]]
-name = "algonaut_encoding"
-version = "0.3.0"
-dependencies = [
- "data-encoding",
- "serde",
-]
-
-[[package]]
-name = "algonaut_encoding"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcb3504a966ffc70dc06a831aea733d51934ed234855bc1d321b64c572635143"
-dependencies = [
- "data-encoding",
- "serde",
-]
-
-[[package]]
-name = "algonaut_model"
-version = "0.3.0"
-dependencies = [
- "algonaut_core 0.3.0",
- "algonaut_crypto 0.3.0",
- "algonaut_encoding 0.3.0",
- "data-encoding",
- "serde",
- "serde_bytes",
- "serde_json",
- "serde_with",
-]
-
-[[package]]
-name = "algonaut_model"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97b37eaa614e3cd6726ef84b3cc31f421671b4d28e54687171717a8e80c89745"
-dependencies = [
- "algonaut_core 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_crypto 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_encoding 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "data-encoding",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "algonaut_transaction"
-version = "0.3.0"
-dependencies = [
- "algonaut_abi",
- "algonaut_core 0.3.0",
- "algonaut_crypto 0.3.0",
- "algonaut_encoding 0.3.0",
- "algonaut_model 0.3.0",
- "data-encoding",
- "derive_more",
- "getrandom",
- "num-bigint 0.4.3",
- "num-traits",
- "rand",
- "ring",
- "rmp-serde 1.1.0",
- "serde",
- "serde_bytes",
- "sha2 0.10.2",
- "thiserror",
- "url",
- "urlencoding",
-]
-
-[[package]]
-name = "algonaut_transaction"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4c8f5060d1f6d4735395d1240d38c60b7579ffe417194af5fadbe2dde73ac8d"
-dependencies = [
- "algonaut_core 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_crypto 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "algonaut_encoding 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "data-encoding",
- "derive_more",
- "getrandom",
- "num-traits",
- "rand",
- "reqwest",
- "ring",
- "rmp-serde 0.15.5",
- "serde",
- "serde_bytes",
- "serde_json",
- "sha2 0.9.9",
- "thiserror",
- "url",
- "urlencoding",
-]
-
-[[package]]
 name = "alloc-no-stdlib"
 version = "2.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -608,7 +368,7 @@ version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1374191e2dd25f9ae02e3aa95041ed5d747fc77b3c102b49fe2dd9a8117a6244"
 dependencies = [
- "num-bigint 0.2.6",
+ "num-bigint",
  "num-integer",
  "num-traits",
 ]
@@ -1195,12 +955,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "data-encoding"
-version = "2.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ee2393c4a91429dffb4bedf19f4d6abf27d8a732c8ce4980305d782e5426d57"
-
-[[package]]
 name = "der"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1245,7 +999,7 @@ dependencies = [
  "byteorder",
  "chrono",
  "diesel_derives",
- "num-bigint 0.2.6",
+ "num-bigint",
  "num-integer",
  "num-traits",
  "pq-sys",
@@ -1958,18 +1712,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 
 [[package]]
-name = "gloo-timers"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5fb7d06c1c8cc2a29bee7ec961009a0b2caa0793ee4900c2ffb348734ba1c8f9"
-dependencies = [
- "futures-channel",
- "futures-core",
- "js-sys",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "group"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2474,17 +2216,6 @@ name = "num-bigint"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "090c7f9998ee0ff65aa5b723e4009f7b217707f1fb5ea551329cc4d6231fb304"
-dependencies = [
- "autocfg",
- "num-integer",
- "num-traits",
-]
-
-[[package]]
-name = "num-bigint"
-version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f93ab6289c7b344a8a9f60f88d80aa20032336fe78da341afc91c8a2341fc75f"
 dependencies = [
  "autocfg",
  "num-integer",
@@ -3025,8 +2756,6 @@ name = "realioverse_api"
 version = "0.1.0"
 dependencies = [
  "actix-web",
- "algonaut",
- "algonaut_client 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bigdecimal",
  "chrono",
  "diesel",
@@ -3183,39 +2912,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "rmp"
-version = "0.8.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44519172358fd6d58656c86ab8e7fbc9e1490c3e8f14d35ed78ca0dd07403c9f"
-dependencies = [
- "byteorder",
- "num-traits",
- "paste",
-]
-
-[[package]]
-name = "rmp-serde"
-version = "0.15.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "723ecff9ad04f4ad92fe1c8ca6c20d2196d9286e9c60727c4cb5511629260e9d"
-dependencies = [
- "byteorder",
- "rmp",
- "serde",
-]
-
-[[package]]
-name = "rmp-serde"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25786b0d276110195fa3d6f3f31299900cf71dfbd6c28450f3f58a0e7f7a347e"
-dependencies = [
- "byteorder",
- "rmp",
- "serde",
 ]
 
 [[package]]
@@ -3391,15 +3087,6 @@ checksum = "93abf9799c576f004252b2a05168d58527fb7c54de12e94b4d12fe3475ffad24"
 dependencies = [
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "serde_bytes"
-version = "0.11.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "212e73464ebcde48d723aa02eb270ba62eff38a9b732df31f33f1b4e145f3a54"
-dependencies = [
- "serde",
 ]
 
 [[package]]
@@ -4033,12 +3720,6 @@ dependencies = [
  "matches",
  "percent-encoding",
 ]
-
-[[package]]
-name = "urlencoding"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68b90931029ab9b034b300b797048cf23723400aa757e8a2bfb9d748102f9821"
 
 [[package]]
 name = "utf-8"
