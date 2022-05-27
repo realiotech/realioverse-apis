@@ -1,12 +1,17 @@
 extern crate derive_more;
 extern crate dotenv;
-use derive_more::{Add, Mul};
+use derive_more::Add;
 use dotenv::dotenv;
-use reqwest::header::{ACCEPT, CONTENT_TYPE};
+use futures::{future, stream, Future, Stream};
+use reqwest::{
+    header::{ACCEPT, CONTENT_TYPE},
+    Client,
+};
 use std::env;
 
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
+use tokio_core::reactor::Handle;
 
 #[derive(Deserialize, Debug)]
 struct Balance {
@@ -28,6 +33,10 @@ struct Balance {
 #[derive(Deserialize, Debug)]
 pub struct Algoholder {
     balances: Vec<Balance>,
+    #[serde(rename = "current-round")]
+    current_round: i64,
+    #[serde(rename = "next-token")]
+    next_token: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -183,6 +192,12 @@ pub struct CombinedData {
     pub supply: i64,
 }
 
+// fn alogrand_stream(handle: &Handle, after: Option<String>) -> Box<Stream<Item=Item, Error=Box<Error>>>{
+//     let client = Client::new(handle)
+// }
+// TODO: Response is paginated.
+//  Handle like this: https://rust-lang-nursery.github.io/rust-cookbook/web/clients/apis.html#consume-a-paginated-restful-api
+//  or : http://xion.io/post/code/rust-unfold-pagination.html
 async fn get_algorand_data() -> i64 {
     let client = reqwest::Client::new();
     let response = client
@@ -290,7 +305,7 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     HttpServer::new(|| {
         App::new()
-            .route("/health_check", web::get().to(health_check))
+            // .route("/health_check", web::get().to(health_check))
             .route("/get_total_holders", web::get().to(get_total_holders))
     })
     .bind("127.0.0.1:8000")?
