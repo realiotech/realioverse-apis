@@ -1,19 +1,18 @@
+#![crate_name = "realioverse_api"]
 extern crate derive_more;
 extern crate dotenv;
+
 use derive_more::Add;
 use dotenv::dotenv;
-use futures::{future, stream, Future, Stream};
-use reqwest::{
-    header::{ACCEPT, CONTENT_TYPE},
-    Client,
-};
+use reqwest::header::{ACCEPT, CONTENT_TYPE};
 use std::env;
 
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
-use tokio_core::reactor::Handle;
 
-#[derive(Deserialize, Debug)]
+/// This struct holds the Balances of each Algorand Asset
+#[derive(Deserialize, Clone)]
+#[allow(dead_code)]
 struct Balance {
     #[allow(clippy::all)]
     address: String,
@@ -29,8 +28,9 @@ struct Balance {
     opted_in_at_round: i64,
 }
 
-/// This struct holds data required to parse Algorand User data.
-#[derive(Deserialize, Debug)]
+/// This struct holds data required to store Algorand asset data
+#[derive(Deserialize, Clone)]
+#[allow(dead_code)]
 pub struct Algoholder {
     balances: Vec<Balance>,
     #[serde(rename = "current-round")]
@@ -39,6 +39,7 @@ pub struct Algoholder {
     next_token: Option<String>,
 }
 
+/// This struct stores data about the supply of an Algorand Asset
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlgoSupply {
     pub asset: Asset,
@@ -46,6 +47,7 @@ pub struct AlgoSupply {
     pub current_round: i64,
 }
 
+// This struct stores information about the Asset in for AlgoSupply
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Asset {
     #[serde(rename = "created-at-round")]
@@ -55,6 +57,7 @@ pub struct Asset {
     pub params: Params,
 }
 
+/// This struct stores parameters about the Asset for AlgoSupply
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Params {
     pub clawback: String,
@@ -100,6 +103,7 @@ pub struct StellarHolders {
     pub price7_d: Vec<Vec<f64>>,
 }
 
+/// This struct stores rating information for StellarHolder
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Rating {
     pub age: i64,
@@ -113,6 +117,7 @@ pub struct Rating {
     pub average: f64,
 }
 
+/// This struct stores tomlinfo information for StellarHolder
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TomlInfo {
     #[serde(rename = "orgName")]
@@ -124,6 +129,7 @@ pub struct TomlInfo {
     pub decimals: i64,
 }
 
+/// This struct stores trustlines information for StellarHolder
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Trustlines {
     pub total: i64,
@@ -131,6 +137,7 @@ pub struct Trustlines {
     pub funded: i64,
 }
 
+/// This struct stores the response of ethereum api call
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EthereumHolders {
     pub address: String,
@@ -141,6 +148,8 @@ pub struct EthereumHolders {
     pub total_supply: String,
     #[serde(rename = "transfersCount")]
     pub transfers_count: i64,
+    #[serde(rename = "txsCount")]
+    pub txs_count: i64,
     #[serde(rename = "lastUpdated")]
     pub last_updated: i64,
     pub owner: String,
@@ -151,8 +160,6 @@ pub struct EthereumHolders {
     pub image: String,
     pub description: String,
     pub website: String,
-    pub twitter: String,
-    pub ts: i64,
     #[serde(rename = "ethTransfersCount")]
     pub eth_transfers_count: i64,
     pub price: Price,
@@ -160,6 +167,7 @@ pub struct EthereumHolders {
     pub count_ops: i64,
 }
 
+/// This struct stores price information for EthereumHolder
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Price {
     pub rate: f64,
@@ -173,49 +181,70 @@ pub struct Price {
     pub available_supply: f64,
     #[serde(rename = "volume24h")]
     pub volume24_h: f64,
-    #[serde(rename = "diff30d")]
-    pub diff30_d: f64,
     #[serde(rename = "volDiff1")]
     pub vol_diff1: f64,
     #[serde(rename = "volDiff7")]
     pub vol_diff7: f64,
     #[serde(rename = "volDiff30")]
     pub vol_diff30: f64,
-    #[serde(rename = "bid")]
+    #[serde(rename = "diff30d")]
+    pub diff30_d: f64,
     pub bid: f64,
     pub currency: String,
 }
 
+/// This struct stores the combined holders and supply for Algorand, Ethereum and Stellar
 #[derive(Add, Serialize)]
 pub struct CombinedData {
     pub holders: i64,
     pub supply: i64,
 }
 
-// fn alogrand_stream(handle: &Handle, after: Option<String>) -> Box<Stream<Item=Item, Error=Box<Error>>>{
-//     let client = Client::new(handle)
-// }
 // TODO: Response is paginated.
 //  Handle like this: https://rust-lang-nursery.github.io/rust-cookbook/web/clients/apis.html#consume-a-paginated-restful-api
 //  or : http://xion.io/post/code/rust-unfold-pagination.html
-async fn get_algorand_data() -> i64 {
-    let client = reqwest::Client::new();
-    let response = client
-        .get(&env::var("ALGOD_URL_1").unwrap())
-        .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
-        .header(CONTENT_TYPE, "application/json")
-        .header(ACCEPT, "application/json")
-        .header("pragma", "public")
-        .send()
-        .await
-        .unwrap()
-        .json::<Algoholder>()
-        .await
-        .unwrap();
 
-    response.balances.len() as i64
+/// This function returns the number of algorand holders
+///
+/// The function returns an `Algoholder` vector, and we get the total number of holders
+/// by `Algoholder.balances.len()`
+async fn get_algorand_holders() -> i64 {
+    let client = reqwest::Client::new();
+    let mut response;
+    let mut current =
+        "http://mainnet-idx.algonode.network/v2/assets/2751733/balances?currency-greater-than=0"
+            .to_string();
+    let mut holders: Vec<Algoholder> = Vec::new();
+
+    loop {
+        response = client
+            .get(&current)
+            .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
+            .header(CONTENT_TYPE, "application/json")
+            .header(ACCEPT, "application/json")
+            .header("pragma", "public")
+            .send()
+            .await
+            .unwrap()
+            .json::<Algoholder>()
+            .await
+            .unwrap();
+        holders.push(response.clone());
+        if let Some(next) = &response.next_token {
+            current = format!("{}&next={}", "http://mainnet-idx.algonode.network/v2/assets/2751733/balances?currency-greater-than=0", next);
+        } else {
+            break;
+        }
+    }
+
+    let mut sum = 0;
+    for entry in &mut holders {
+        sum += entry.balances.len();
+    }
+    sum as i64
 }
 
+/// This function returns the total supply of RIO on Algorand
 async fn get_algorand_supply() -> i64 {
     let client = reqwest::Client::new();
     let response = client
@@ -234,8 +263,9 @@ async fn get_algorand_supply() -> i64 {
     response.asset.params.total
 }
 
+/// This function combines `get_algorand_holders and `get_algorand_supply`
 async fn combine_algorand_data() -> CombinedData {
-    let (a, b) = tokio::join!(get_algorand_data(), get_algorand_supply());
+    let (a, b) = tokio::join!(get_algorand_holders(), get_algorand_supply());
 
     CombinedData {
         holders: a,
@@ -243,6 +273,7 @@ async fn combine_algorand_data() -> CombinedData {
     }
 }
 
+/// This function returns RIO holders and supply on Stellar
 async fn get_stellar_data() -> CombinedData {
     let client = reqwest::Client::new();
     let response = client
@@ -263,7 +294,7 @@ async fn get_stellar_data() -> CombinedData {
     }
 }
 
-// TODO: Add API Key as query string variable.
+/// This function returns RIO supply and holders on Ethereum
 async fn get_ethereum_data() -> CombinedData {
     let client = reqwest::Client::new();
     let response = client
@@ -284,6 +315,7 @@ async fn get_ethereum_data() -> CombinedData {
     }
 }
 
+/// This function returns RIO supply and holder information for Algorand , Ethereum and Stellar
 async fn get_total_holders() -> impl Responder {
     let (algorand_holders, stellar_holders, ethereum_holders) = tokio::join! {
         combine_algorand_data(),
@@ -295,17 +327,17 @@ async fn get_total_holders() -> impl Responder {
     HttpResponse::Ok().json(resp)
 }
 
+/// This function implements a health check
 async fn health_check() -> impl Responder {
     HttpResponse::Ok()
 }
 
 #[tokio::main]
-
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     HttpServer::new(|| {
         App::new()
-            // .route("/health_check", web::get().to(health_check))
+            .route("/health_check", web::get().to(health_check))
             .route("/get_total_holders", web::get().to(get_total_holders))
     })
     .bind("127.0.0.1:8000")?
