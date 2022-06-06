@@ -55,7 +55,7 @@ jobs:
   docker:
     name: Docker
     # if: github.event_name == 'push' && github.ref_type == 'tag'
-    needs: build
+    needs: test
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
