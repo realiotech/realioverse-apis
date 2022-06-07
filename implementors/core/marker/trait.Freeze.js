@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["realioverse_api"] = [{"text":"impl Freeze for <a class=\"struct\" href=\"realioverse_api/struct.CombinedData.html\" title=\"struct realioverse_api::CombinedData\">CombinedData</a>","synthetic":true,"types":["realioverse_api::CombinedData"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

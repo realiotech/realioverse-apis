@@ -1,0 +1,4 @@
+var searchIndex = JSON.parse('{\
+"realioverse_api":{"doc":"","t":[3,11,11,11,11,12,11,5,11,12,11,11,11,11],"n":["CombinedData","add","borrow","borrow_mut","from","holders","into","run","serialize","supply","try_from","try_into","type_id","vzip"],"q":["realioverse_api","","","","","","","","","","","","",""],"d":["This struct stores the combined holders and supply for …","","","","Returns the argument unchanged.","","Calls <code>U::from(self)</code>.","","","","","","",""],"i":[0,1,1,1,1,1,1,0,1,1,1,1,1,1],"f":[null,[[["combineddata",3]],["combineddata",3]],[[["",0]],["",0]],[[["",0]],["",0]],[[]],null,[[]],[[],["result",4,[["server",3],["error",3]]]],[[["",0]],["result",4]],null,[[],["result",4]],[[],["result",4]],[[["",0]],["typeid",3]],[[]]],"p":[[3,"CombinedData"]]}\
+}');
+if (window.initSearch) {window.initSearch(searchIndex)};

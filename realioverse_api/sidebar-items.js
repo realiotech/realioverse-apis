@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["run",""]],"struct":[["CombinedData","This struct stores the combined holders and supply for Algorand, Ethereum and Stellar"]]});
