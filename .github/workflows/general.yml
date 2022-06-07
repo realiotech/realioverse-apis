@@ -65,7 +65,7 @@ jobs:
 
   docker:
     name: Docker
-    # if: github.event_name == 'push' && github.ref_type == 'tag'
+    if:  github.ref_type == 'tag'
     needs: test
     runs-on: ubuntu-20.04
     steps:
