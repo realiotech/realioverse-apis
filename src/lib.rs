@@ -1,11 +1,11 @@
 extern crate derive_more;
 extern crate dotenv;
 
-use actix_web::dev::Server;
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{dev::Server, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use derive_more::Add;
 use dotenv::dotenv;
 use serde::Serialize;
+use std::net::TcpListener;
 
 mod chains;
 use chains::{algorand::*, ethereum::*, stellar::*};
@@ -19,7 +19,14 @@ pub struct CombinedData {
 
 /// This function returns RIO supply and holder information for Algorand , Ethereum and Stellar
 async fn get_total_holders() -> impl Responder {
-    let (algorand_holders, stellar_holders, ethereum_holders) = tokio::join! {
+    log::info!("Calculating combined data");
+    // match tokio::join!{ combine_algorand_data(),get_stellar_data(),get_ethereum_data()}{
+    //     Ok(_) => {
+    //         log::info!("Combined Data has been calculated")
+    //         algorand_holders, stellar_holders, ethereum_holders
+    //     }
+    // }
+    let (algorand_holders, stellar_holgit ders, ethereum_holders) = tokio::join! {
         combine_algorand_data(),
         get_stellar_data(),
         get_ethereum_data()
@@ -47,14 +54,15 @@ async fn health_check() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
-pub fn run() -> Result<Server, std::io::Error> {
+pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     dotenv().ok();
     let server = HttpServer::new(|| {
         App::new()
+            .wrap(Logger::default())
             .route("/health_check", web::get().to(health_check))
             .route("/get_total_holders", web::get().to(get_total_holders))
     })
-    .bind("127.0.0.1:8000")?
+    .listen(listener)?
     .run();
 
     Ok(server)

@@ -92,7 +92,7 @@ async fn get_algorand_holders() -> i64 {
     loop {
         response = client
             .get(&current)
-            .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
+            // .header("x-api-key", &env::var("ALGOD_TOKEN").unwrap())
             .header(CONTENT_TYPE, "application/json")
             .header(ACCEPT, "application/json")
             .header("pragma", "public")
